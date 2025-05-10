@@ -10,5 +10,6 @@ sealed class BultenEvent {
     data class SelectSport(val index: Int) : BultenEvent()
     data class LoadOdds(val sportKey: String) : BultenEvent()
     data class SearchQueryChanged(val query: String) : BultenEvent()
+    data class SelectOdd(val oddsId: String, val outcomeName: String) : BultenEvent()
     // Diğer eventler buraya eklenebilir
 } 

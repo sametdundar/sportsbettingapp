@@ -13,6 +13,7 @@ data class BultenState(
     val currentApiKey: String = "",
     val selectedSportIndex: Int = 0,
     val odds: List<Odds> = emptyList(),
-    val searchQuery: String = ""
+    val searchQuery: String = "",
+    val selectedOdd: Pair<String, String>? = null // oddsId, outcomeName
     // Buraya bülten verileri eklenecek
 ) 

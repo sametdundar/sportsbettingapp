@@ -66,6 +66,9 @@ class BultenViewModel @Inject constructor(
             is BultenEvent.SearchQueryChanged -> {
                 _state.value = _state.value.copy(searchQuery = event.query)
             }
+            is BultenEvent.SelectOdd -> {
+                _state.value = _state.value.copy(selectedOdd = event.oddsId to event.outcomeName)
+            }
         }
     }
 

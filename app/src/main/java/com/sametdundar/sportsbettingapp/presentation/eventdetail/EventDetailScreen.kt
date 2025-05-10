@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 
 @Composable
 fun EventDetailScreen(
@@ -19,12 +21,18 @@ fun EventDetailScreen(
     viewModel: EventDetailViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val scrollState = rememberScrollState()
 
     LaunchedEffect(sportKey, eventId) {
         viewModel.onEvent(EventDetailEvent.LoadOdds(sportKey, eventId))
     }
 
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+            .verticalScroll(scrollState)
+    ) {
         when {
             state.isLoading -> {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -42,7 +50,16 @@ fun EventDetailScreen(
                 state.odds!!.bookmakers.forEach { bookmaker ->
                     Text(text = bookmaker.title, style = MaterialTheme.typography.titleMedium)
                     bookmaker.markets.forEach { market ->
-                        Text(text = "Market: ${market.key}", style = MaterialTheme.typography.bodyMedium)
+                        val marketExplanation = when (market.key) {
+                            "h2h" -> "(Kazanan: Maçı kim kazanır)"
+                            "spreads" -> "(Handikap: Maç handikaplı skorla biter)"
+                            "totals" -> "(Toplam: Maçta toplam sayı/gol üstü-altı)"
+                            else -> ""
+                        }
+                        Text(
+                            text = "Market: ${market.key} $marketExplanation",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                         market.outcomes.forEach { outcome ->
                             Text(text = "${outcome.name}: ${outcome.price}", style = MaterialTheme.typography.bodySmall)
                         }
