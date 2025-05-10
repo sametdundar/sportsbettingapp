@@ -13,6 +13,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.background
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.time.ZoneId
 
 @Composable
 fun EventDetailScreen(
@@ -30,7 +38,8 @@ fun EventDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .background(Color(0xFFF6FAFF))
+            .padding(12.dp)
             .verticalScroll(scrollState)
     ) {
         when {
@@ -45,28 +54,115 @@ fun EventDetailScreen(
                 }
             }
             state.odds != null -> {
-                Text(text = "${state.odds!!.homeTeam} vs ${state.odds!!.awayTeam}", style = MaterialTheme.typography.titleLarge)
-                Spacer(modifier = Modifier.height(16.dp))
-                state.odds!!.bookmakers.forEach { bookmaker ->
-                    Text(text = bookmaker.title, style = MaterialTheme.typography.titleMedium)
-                    bookmaker.markets.forEach { market ->
-                        val marketExplanation = when (market.key) {
-                            "h2h" -> "(Kazanan: Maçı kim kazanır)"
-                            "spreads" -> "(Handikap: Maç handikaplı skorla biter)"
-                            "totals" -> "(Toplam: Maçta toplam sayı/gol üstü-altı)"
-                            else -> ""
-                        }
-                        Text(
-                            text = "Market: ${market.key} $marketExplanation",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        market.outcomes.forEach { outcome ->
-                            Text(text = "${outcome.name}: ${outcome.price}", style = MaterialTheme.typography.bodySmall)
+                val odds = state.odds!!
+                // Başlık ve saat
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp)
+                        .background(Color.White, RoundedCornerShape(16.dp))
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        text = "${odds.homeTeam} - ${odds.awayTeam}",
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold, fontSize = 20.sp),
+                        color = Color(0xFF223047)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = formatMatchTime(odds.commenceTime),
+                        style = MaterialTheme.typography.bodySmall.copy(fontSize = 13.sp),
+                        color = Color(0xFF388E3C)
+                    )
+                }
+                odds.bookmakers.forEach { bookmaker ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 6.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = bookmaker.title,
+                                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                                color = Color(0xFF223047)
+                            )
+                            bookmaker.markets.forEach { market ->
+                                val marketExplanation = when (market.key) {
+                                    "h2h" -> "Kazanan"
+                                    "spreads" -> "Handikap"
+                                    "totals" -> "Toplam"
+                                    else -> market.key
+                                }
+                                Spacer(modifier = Modifier.height(6.dp))
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .background(Color(0xFF223047), RoundedCornerShape(8.dp))
+                                        .padding(vertical = 6.dp, horizontal = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = marketExplanation,
+                                        color = Color.White,
+                                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "(${market.key})",
+                                        color = Color.White.copy(alpha = 0.7f),
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    market.outcomes.forEach { outcome ->
+                                        Column(
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .background(
+                                                    Color(0xFFF6FAFF),
+                                                    RoundedCornerShape(8.dp)
+                                                )
+                                                .padding(vertical = 8.dp),
+                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        ) {
+                                            Text(
+                                                text = outcome.price.toString(),
+                                                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
+                                                color = Color(0xFF388E3C)
+                                            )
+                                            Text(
+                                                text = outcome.name,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = Color(0xFF223047)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
-                    Spacer(modifier = Modifier.height(12.dp))
                 }
             }
         }
+    }
+}
+
+fun formatMatchTime(commenceTime: String?): String {
+    return try {
+        if (commenceTime.isNullOrBlank()) return ""
+        val zonedDateTime = ZonedDateTime.parse(commenceTime)
+        val istanbulZone = ZoneId.of("Europe/Istanbul")
+        val localDateTime = zonedDateTime.withZoneSameInstant(istanbulZone)
+        val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+        localDateTime.format(formatter)
+    } catch (e: Exception) {
+        ""
     }
 } 

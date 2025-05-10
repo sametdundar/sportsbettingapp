@@ -241,10 +241,11 @@ fun MacScreen(
     if (state.showSaveCouponDialog) {
         AlertDialog(
             onDismissRequest = { viewModel.onEvent(MacEvent.HideSaveCouponDialog) },
-            title = { Text("Kuponu kaydetmek ve oynamak istiyor musunuz?") },
+            title = { Text("Kuponu Onayla") },
+            text = { Text("Kuponu kaydetmek istediğinize emin misiniz?") },
             confirmButton = {
                 TextButton(onClick = {
-                    viewModel.onEvent(MacEvent.SaveCoupon)
+                    viewModel.onEvent(MacEvent.SaveCoupon, onAllBetsCleared)
                     viewModel.onEvent(MacEvent.HideSaveCouponDialog)
                 }) {
                     Text("Evet")

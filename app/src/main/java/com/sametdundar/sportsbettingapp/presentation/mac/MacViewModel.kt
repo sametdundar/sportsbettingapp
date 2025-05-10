@@ -25,7 +25,7 @@ class MacViewModel @Inject constructor(
         onEvent(MacEvent.LoadSelectedBets)
     }
 
-    fun onEvent(event: MacEvent) {
+    fun onEvent(event: MacEvent, onAllBetsCleared: (() -> Unit)? = null) {
         when (event) {
             is MacEvent.LoadSelectedBets -> {
                 viewModelScope.launch {
@@ -79,6 +79,7 @@ class MacViewModel @Inject constructor(
                         couponDao.insertCoupon(coupon)
                         basketManager.clearBets()
                         _state.value = MacState() // state'i sıfırla
+                        onAllBetsCleared?.invoke() // Bülten'deki seçili oranları temizle
                     }
                 }
             }
