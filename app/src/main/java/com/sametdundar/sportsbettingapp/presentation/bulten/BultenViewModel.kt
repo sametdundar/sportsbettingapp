@@ -115,6 +115,9 @@ class BultenViewModel @Inject constructor(
                 }
                 _state.value = _state.value.copy(selectedOdds = updatedMap)
             }
+            is BultenEvent.ClearAllSelectedOdds -> {
+                _state.value = _state.value.copy(selectedOdds = emptyMap())
+            }
         }
     }
 

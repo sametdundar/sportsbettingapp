@@ -47,6 +47,12 @@ import com.sametdundar.sportsbettingapp.presentation.eventdetail.EventDetailScre
 import com.sametdundar.sportsbettingapp.presentation.mac.MacScreen
 import com.sametdundar.sportsbettingapp.ui.theme.SportsBettingAppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import com.sametdundar.sportsbettingapp.MainViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.collectAsState
+import com.sametdundar.sportsbettingapp.presentation.bulten.BultenViewModel
+import com.sametdundar.sportsbettingapp.presentation.bulten.BultenEvent
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -79,7 +85,13 @@ fun MainNavigation() {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
     val selectedIndex = items.indexOfFirst { it.route == currentRoute }.takeIf { it >= 0 } ?: 0
-    var selectedMatchCount by remember { mutableStateOf(0) }
+
+    // BasketManager'ı Hilt ile inject etme, onun yerine MainViewModel'i kullan
+    val mainViewModel: MainViewModel = androidx.hilt.navigation.compose.hiltViewModel()
+    val selectedBets by mainViewModel.selectedBets.collectAsState()
+    val selectedMatchCount = selectedBets.size
+
+    val bultenViewModel: BultenViewModel = androidx.hilt.navigation.compose.hiltViewModel()
 
     Scaffold(
         bottomBar = {
@@ -156,11 +168,13 @@ fun MainNavigation() {
                     onNavigateToEventDetail = { sportKey, eventId ->
                         navController.navigate("eventDetail/$sportKey/$eventId")
                     },
-                    onSelectedOddsChanged = { selectedMatchCount = it }
+                    viewModel = bultenViewModel
                 )
             }
             composable(BottomNavItem.Matches.route) {
-                MacScreen()
+                MacScreen(onAllBetsCleared = {
+                    bultenViewModel.onEvent(BultenEvent.ClearAllSelectedOdds)
+                })
             }
             composable(BottomNavItem.Coupons.route) {
                 KuponScreen()
