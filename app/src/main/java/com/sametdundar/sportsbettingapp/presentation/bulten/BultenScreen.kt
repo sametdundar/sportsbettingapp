@@ -223,6 +223,9 @@ fun BultenScreen(
                                     onOddClick = { idx ->
                                         val outcomeName = outcomes.getOrNull(idx)?.name ?: return@MatchItemModern
                                         viewModel.onEvent(BultenEvent.SelectOdd(odds.id, outcomeName))
+                                    },
+                                    onTeamsClick = {
+                                        onNavigateToEventDetail(odds.sportKey, odds.id)
                                     }
                                 )
                             }
@@ -276,7 +279,8 @@ fun MatchItemModern(
     odds: List<Pair<String, String>>,
     selectedOutcomeName: String?,
     outcomeNames: List<String>,
-    onOddClick: (index: Int) -> Unit
+    onOddClick: (index: Int) -> Unit,
+    onTeamsClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -287,7 +291,9 @@ fun MatchItemModern(
             .padding(8.dp)
     ) {
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onTeamsClick() },
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {

@@ -30,4 +30,8 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideGetSportsUseCase(repository: OddsRepository): GetSportsUseCase = GetSportsUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideBasketManager(): BasketManager = BasketManager()
 } 

@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sametdundar.sportsbettingapp.domain.usecase.GetSportsUseCase
 import com.sametdundar.sportsbettingapp.domain.usecase.GetOddsUseCase
+import com.sametdundar.sportsbettingapp.di.BasketManager
+import com.sametdundar.sportsbettingapp.domain.model.SelectedBet
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +15,8 @@ import javax.inject.Inject
 @HiltViewModel
 class BultenViewModel @Inject constructor(
     private val getSportsUseCase: GetSportsUseCase,
-    private val getOddsUseCase: GetOddsUseCase
+    private val getOddsUseCase: GetOddsUseCase,
+    private val basketManager: BasketManager
 ) : ViewModel() {
     private val _state = MutableStateFlow(BultenState())
     val state: StateFlow<BultenState> = _state
@@ -71,8 +74,44 @@ class BultenViewModel @Inject constructor(
                 val currentSelected = updatedMap[event.oddsId]
                 if (currentSelected == event.outcomeName) {
                     updatedMap.remove(event.oddsId)
+                    val odds = _state.value.odds.find { it.id == event.oddsId }
+                    odds?.let {
+                        val market = it.bookmakers.firstOrNull()?.markets?.firstOrNull()
+                        val outcome = market?.outcomes?.find { o -> o.name == event.outcomeName }
+                        if (outcome != null) {
+                            basketManager.removeBet(
+                                SelectedBet(
+                                    matchId = it.id,
+                                    homeTeam = it.homeTeam,
+                                    awayTeam = it.awayTeam,
+                                    marketKey = market.key,
+                                    outcomeName = outcome.name,
+                                    odd = outcome.price,
+                                    matchTime = it.commenceTime
+                                )
+                            )
+                        }
+                    }
                 } else {
                     updatedMap[event.oddsId] = event.outcomeName
+                    val odds = _state.value.odds.find { it.id == event.oddsId }
+                    odds?.let {
+                        val market = it.bookmakers.firstOrNull()?.markets?.firstOrNull()
+                        val outcome = market?.outcomes?.find { o -> o.name == event.outcomeName }
+                        if (market != null && outcome != null) {
+                            basketManager.addBet(
+                                SelectedBet(
+                                    matchId = it.id,
+                                    homeTeam = it.homeTeam,
+                                    awayTeam = it.awayTeam,
+                                    marketKey = market.key,
+                                    outcomeName = outcome.name,
+                                    odd = outcome.price,
+                                    matchTime = it.commenceTime
+                                )
+                            )
+                        }
+                    }
                 }
                 _state.value = _state.value.copy(selectedOdds = updatedMap)
             }
