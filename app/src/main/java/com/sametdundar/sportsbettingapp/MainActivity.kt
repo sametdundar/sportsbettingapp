@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Receipt
@@ -31,19 +29,21 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
-import com.sametdundar.sportsbettingapp.presentation.canli.CanliScreen
 import com.sametdundar.sportsbettingapp.presentation.bulten.BultenScreen
 import com.sametdundar.sportsbettingapp.presentation.mac.MacScreen
-import com.sametdundar.sportsbettingapp.presentation.favori.FavoriScreen
 import com.sametdundar.sportsbettingapp.presentation.kupon.KuponScreen
 import com.sametdundar.sportsbettingapp.ui.theme.SportsBettingAppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.sametdundar.sportsbettingapp.presentation.eventdetail.EventDetailScreen
 
 sealed class BottomNavItem(val title: String, val icon: ImageVector) {
-    object Canli : BottomNavItem("Canlı", Icons.Filled.Home)
     object Bulten : BottomNavItem("Bülten", Icons.Filled.List)
     object Mac : BottomNavItem("Maç", Icons.Filled.Star)
-    object Favori : BottomNavItem("Favori", Icons.Filled.Favorite)
     object Kupon : BottomNavItem("Kupon", Icons.Filled.Receipt)
 }
 
@@ -54,14 +54,34 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SportsBettingAppTheme {
-                MainScreen()
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = "main") {
+                    composable("main") {
+                        MainScreen(
+                            onNavigateToEventDetail = { sportKey, eventId ->
+                                navController.navigate("eventDetail/$sportKey/$eventId")
+                            }
+                        )
+                    }
+                    composable(
+                        "eventDetail/{sportKey}/{eventId}",
+                        arguments = listOf(
+                            navArgument("sportKey") { type = NavType.StringType },
+                            navArgument("eventId") { type = NavType.StringType }
+                        )
+                    ) { backStackEntry ->
+                        val sportKey = backStackEntry.arguments?.getString("sportKey") ?: ""
+                        val eventId = backStackEntry.arguments?.getString("eventId") ?: ""
+                        EventDetailScreen(sportKey = sportKey, eventId = eventId)
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun MainScreen() {
+fun MainScreen(onNavigateToEventDetail: (String, String) -> Unit) {
     val items = listOf(
         BottomNavItem.Bulten,
         BottomNavItem.Mac,
@@ -115,7 +135,7 @@ fun MainScreen() {
         floatingActionButtonPosition = FabPosition.Center
     ) { innerPadding ->
         when (selectedIndex) {
-            0 -> BultenScreen()
+            0 -> BultenScreen(onNavigateToEventDetail = onNavigateToEventDetail)
             1 -> MacScreen()
             2 -> KuponScreen()
         }
@@ -126,6 +146,6 @@ fun MainScreen() {
 @Composable
 fun MainScreenPreview() {
     SportsBettingAppTheme {
-        MainScreen()
+        MainScreen(onNavigateToEventDetail = { _, _ -> })
     }
 }

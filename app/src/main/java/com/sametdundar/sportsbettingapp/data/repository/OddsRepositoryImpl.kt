@@ -44,6 +44,10 @@ class OddsRepositoryImpl(
         return safeApiCall { api.getOdds(sportKey, getApiKey(), regions, markets).map { it.toDomain() } }
     }
 
+    override suspend fun getEventOdds(sportKey: String, eventId: String, regions: String, markets: String): Odds {
+        return safeApiCall { api.getEventOdds(sportKey, eventId, getApiKey(), regions, markets).toDomain() }
+    }
+
     private suspend fun <T> safeApiCall(block: suspend () -> T): T {
         return try {
             block()

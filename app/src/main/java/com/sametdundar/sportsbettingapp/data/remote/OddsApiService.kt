@@ -15,4 +15,13 @@ interface OddsApiService {
         @Query("regions") regions: String,
         @Query("markets") markets: String
     ): List<OddsResponse>
+
+    @GET("v4/sports/{sportKey}/events/{eventId}/odds/")
+    suspend fun getEventOdds(
+        @Path("sportKey") sportKey: String,
+        @Path("eventId") eventId: String,
+        @Query("apiKey") apiKey: String,
+        @Query("regions") regions: String = "us",
+        @Query("markets") markets: String = "h2h"
+    ): OddsResponse
 } 

@@ -8,4 +8,5 @@ interface OddsRepository {
     suspend fun getOdds(sportKey: String, regions: String, markets: String): List<Odds>
     fun getApiKey(): String
     fun setApiKey(newKey: String)
+    suspend fun getEventOdds(sportKey: String, eventId: String, regions: String = "us", markets: String = "h2h"): Odds
 } 

@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.Search
 
 @Composable
 fun BultenScreen(
+    onNavigateToEventDetail: (String, String) -> Unit,
     viewModel: BultenViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -181,7 +182,10 @@ fun BultenScreen(
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(8.dp),
+                                    .padding(8.dp)
+                                    .clickable {
+                                        onNavigateToEventDetail(odds.sportKey, odds.id)
+                                    },
                                 elevation = CardDefaults.cardElevation(2.dp)
                             ) {
                                 Column(modifier = Modifier.padding(16.dp)) {
