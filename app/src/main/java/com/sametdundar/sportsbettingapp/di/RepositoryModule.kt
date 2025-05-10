@@ -3,6 +3,8 @@ package com.sametdundar.sportsbettingapp.di
 import com.sametdundar.sportsbettingapp.data.remote.OddsApiService
 import com.sametdundar.sportsbettingapp.data.repository.OddsRepositoryImpl
 import com.sametdundar.sportsbettingapp.domain.repository.OddsRepository
+import com.sametdundar.sportsbettingapp.domain.usecase.GetOddsUseCase
+import com.sametdundar.sportsbettingapp.domain.usecase.GetSportsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -20,4 +22,12 @@ object RepositoryModule {
         api: OddsApiService,
         sharedPreferences: SharedPreferences
     ): OddsRepository = OddsRepositoryImpl(api, sharedPreferences)
+
+    @Provides
+    @Singleton
+    fun provideGetOddsUseCase(repository: OddsRepository): GetOddsUseCase = GetOddsUseCase(repository)
+
+    @Provides
+    @Singleton
+    fun provideGetSportsUseCase(repository: OddsRepository): GetSportsUseCase = GetSportsUseCase(repository)
 } 

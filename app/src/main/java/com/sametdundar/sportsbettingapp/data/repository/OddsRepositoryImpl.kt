@@ -37,7 +37,7 @@ class OddsRepositoryImpl(
     }
 
     override suspend fun getSports(): List<Sport> {
-        return safeApiCall { api.getSports(getApiKey()).map { it.toDomain() } }
+        return safeApiCall { api.getSports(getApiKey()).map { it.toDomain() }.filter { !it.hasOutrights } }
     }
 
     override suspend fun getOdds(sportKey: String, regions: String, markets: String): List<Odds> {

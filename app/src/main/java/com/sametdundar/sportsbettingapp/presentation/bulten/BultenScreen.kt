@@ -32,7 +32,7 @@ fun BultenScreen(
     var newApiKey by remember(state.showApiKeyDialog) { mutableStateOf(state.currentApiKey) }
     val scrollState = rememberScrollState()
     val sportScrollState = rememberScrollState()
-    var selectedSport by remember(state.selectedGroup) { mutableStateOf(0) }
+    var selectedSport by remember { mutableStateOf(state.selectedSportIndex) }
 
     if (state.showApiKeyDialog) {
         AlertDialog(
@@ -130,7 +130,10 @@ fun BultenScreen(
                                     .padding(4.dp)
                                     .clip(RoundedCornerShape(50))
                                     .background(if (isSelected) Color.White else Color.Transparent)
-                                    .clickable { selectedSport = index }
+                                    .clickable {
+                                        selectedSport = index
+                                        viewModel.onEvent(BultenEvent.SelectSport(index))
+                                    }
                                     .padding(horizontal = 20.dp, vertical = 10.dp),
                                 color = if (isSelected) Color(0xFF388E3C) else Color.White,
                                 style = MaterialTheme.typography.titleMedium
@@ -138,17 +141,26 @@ fun BultenScreen(
                         }
                     }
                 }
-                LazyColumn(modifier = Modifier.fillMaxSize()) {
-                    items(filteredSports) { sport ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp),
-                            elevation = CardDefaults.cardElevation(2.dp)
-                        ) {
-                            Column(modifier = Modifier.padding(16.dp)) {
-                                Text(text = sport.title, style = MaterialTheme.typography.titleMedium)
-                                Text(text = sport.description ?: "", style = MaterialTheme.typography.bodySmall)
+                if (state.odds.isNotEmpty()) {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(state.odds) { odds ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp),
+                                elevation = CardDefaults.cardElevation(2.dp)
+                            ) {
+                                Column(modifier = Modifier.padding(16.dp)) {
+                                    Text(text = "${odds.homeTeam} vs ${odds.awayTeam}", style = MaterialTheme.typography.titleMedium)
+                                    odds.bookmakers.forEach { bookmaker ->
+                                        Text(text = "${bookmaker.title}", style = MaterialTheme.typography.bodyMedium)
+                                        bookmaker.markets.forEach { market ->
+                                            market.outcomes.forEach { outcome ->
+                                                Text(text = "${outcome.name}: ${outcome.price}", style = MaterialTheme.typography.bodySmall)
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
                     }

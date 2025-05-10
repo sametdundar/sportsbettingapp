@@ -7,5 +7,7 @@ sealed class BultenEvent {
     object ShowApiKeyDialog : BultenEvent()
     object HideApiKeyDialog : BultenEvent()
     data class ChangeApiKey(val newKey: String) : BultenEvent()
+    data class SelectSport(val index: Int) : BultenEvent()
+    data class LoadOdds(val sportKey: String) : BultenEvent()
     // Diğer eventler buraya eklenebilir
 } 
