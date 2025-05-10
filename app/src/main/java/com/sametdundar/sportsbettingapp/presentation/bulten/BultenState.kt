@@ -14,6 +14,6 @@ data class BultenState(
     val selectedSportIndex: Int = 0,
     val odds: List<Odds> = emptyList(),
     val searchQuery: String = "",
-    val selectedOdd: Pair<String, String>? = null // oddsId, outcomeName
+    val selectedOdds: Map<String, String> = emptyMap() // oddsId -> outcomeName
     // Buraya bülten verileri eklenecek
 ) 

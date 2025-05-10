@@ -27,6 +27,10 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -75,6 +79,7 @@ fun MainNavigation() {
     val navBackStackEntry = navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry.value?.destination?.route
     val selectedIndex = items.indexOfFirst { it.route == currentRoute }.takeIf { it >= 0 } ?: 0
+    var selectedMatchCount by remember { mutableStateOf(0) }
 
     Scaffold(
         bottomBar = {
@@ -135,7 +140,7 @@ fun MainNavigation() {
                         contentDescription = "Oyun",
                         tint = Color(0xFF388E3C)
                     )
-                    Text("0 Maç", color = Color(0xFF388E3C))
+                    Text("${selectedMatchCount} Maç", color = Color(0xFF388E3C))
                 }
             }
         },
@@ -147,9 +152,12 @@ fun MainNavigation() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavItem.Bulletin.route) {
-                BultenScreen(onNavigateToEventDetail = { sportKey, eventId ->
-                    navController.navigate("eventDetail/$sportKey/$eventId")
-                })
+                BultenScreen(
+                    onNavigateToEventDetail = { sportKey, eventId ->
+                        navController.navigate("eventDetail/$sportKey/$eventId")
+                    },
+                    onSelectedOddsChanged = { selectedMatchCount = it }
+                )
             }
             composable(BottomNavItem.Matches.route) {
                 MacScreen()

@@ -67,7 +67,14 @@ class BultenViewModel @Inject constructor(
                 _state.value = _state.value.copy(searchQuery = event.query)
             }
             is BultenEvent.SelectOdd -> {
-                _state.value = _state.value.copy(selectedOdd = event.oddsId to event.outcomeName)
+                val updatedMap = _state.value.selectedOdds.toMutableMap()
+                val currentSelected = updatedMap[event.oddsId]
+                if (currentSelected == event.outcomeName) {
+                    updatedMap.remove(event.oddsId)
+                } else {
+                    updatedMap[event.oddsId] = event.outcomeName
+                }
+                _state.value = _state.value.copy(selectedOdds = updatedMap)
             }
         }
     }

@@ -37,10 +37,12 @@ import androidx.compose.ui.text.font.FontWeight
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.ZoneId
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun BultenScreen(
     onNavigateToEventDetail: (String, String) -> Unit,
+    onSelectedOddsChanged: (Int) -> Unit = {},
     viewModel: BultenViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -49,6 +51,10 @@ fun BultenScreen(
     val sportScrollState = rememberScrollState()
     var selectedSport by remember { mutableStateOf(state.selectedSportIndex) }
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(state.selectedOdds) {
+        onSelectedOddsChanged(state.selectedOdds.size)
+    }
 
     if (state.showApiKeyDialog) {
         AlertDialog(
@@ -212,8 +218,7 @@ fun BultenScreen(
                                         }
                                         outcome.price.toString() to label
                                     },
-                                    selectedOdd = state.selectedOdd,
-                                    oddsId = odds.id,
+                                    selectedOutcomeName = state.selectedOdds[odds.id],
                                     outcomeNames = outcomes.map { it.name },
                                     onOddClick = { idx ->
                                         val outcomeName = outcomes.getOrNull(idx)?.name ?: return@MatchItemModern
@@ -269,8 +274,7 @@ fun MatchItemModern(
     homeTeam: String,
     awayTeam: String,
     odds: List<Pair<String, String>>,
-    selectedOdd: Pair<String, String>?,
-    oddsId: String,
+    selectedOutcomeName: String?,
     outcomeNames: List<String>,
     onOddClick: (index: Int) -> Unit
 ) {
@@ -311,7 +315,7 @@ fun MatchItemModern(
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             odds.forEachIndexed { index, (odd, label) ->
-                val isSelected = selectedOdd?.first == oddsId && selectedOdd.second == outcomeNames.getOrNull(index)
+                val isSelected = selectedOutcomeName == outcomeNames.getOrNull(index)
                 Column(
                     modifier = Modifier
                         .weight(1f)
