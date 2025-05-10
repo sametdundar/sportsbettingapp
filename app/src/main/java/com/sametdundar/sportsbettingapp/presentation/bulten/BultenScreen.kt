@@ -173,7 +173,10 @@ fun BultenScreen(
                     }
                 }
                 if (filteredOdds.isNotEmpty()) {
-                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = 80.dp)
+                    ) {
                         items(filteredOdds) { odds ->
                             Card(
                                 modifier = Modifier
