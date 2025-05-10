@@ -25,5 +25,6 @@ data class OutcomeResponse(
     val name: String,
     val price: Double?,
     val point: Double? = null,
-    val description: String? = null
+    val description: String? = null,
+    val sid: String? = null
 ) 

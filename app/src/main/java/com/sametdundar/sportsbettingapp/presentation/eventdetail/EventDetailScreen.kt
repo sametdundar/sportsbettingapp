@@ -21,6 +21,10 @@ import androidx.compose.ui.unit.sp
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.ZoneId
+import com.sametdundar.sportsbettingapp.domain.model.SelectedBet
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.clickable
+import com.sametdundar.sportsbettingapp.MainViewModel
 
 @Composable
 fun EventDetailScreen(
@@ -30,6 +34,8 @@ fun EventDetailScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
+    val basketManager = hiltViewModel<MainViewModel>().basketManager
+    val selectedBets by basketManager.selectedBets.collectAsState()
 
     LaunchedEffect(sportKey, eventId) {
         viewModel.onEvent(EventDetailEvent.LoadOdds(sportKey, eventId))
@@ -75,7 +81,8 @@ fun EventDetailScreen(
                         color = Color(0xFF388E3C)
                     )
                 }
-                odds.bookmakers.forEach { bookmaker ->
+                val bookmaker = odds.bookmakers.firstOrNull()
+                if (bookmaker != null) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -122,13 +129,46 @@ fun EventDetailScreen(
                                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                                 ) {
                                     market.outcomes.forEach { outcome ->
+                                        val outcomeId = outcome.sid ?: "${outcome.name}_${market.key}_${odds.id}"
+                                        val isSelected = selectedBets.any {
+                                            (it.sid ?: "${it.outcomeName}_${it.marketKey}_${it.matchId}") == outcomeId &&
+                                            it.marketKey == market.key &&
+                                            it.matchId == odds.id &&
+                                            it.homeTeam == odds.homeTeam &&
+                                            it.awayTeam == odds.awayTeam &&
+                                            it.odd == outcome.price
+                                        }
                                         Column(
                                             modifier = Modifier
                                                 .weight(1f)
+                                                .clip(RoundedCornerShape(8.dp))
                                                 .background(
-                                                    Color(0xFFF6FAFF),
+                                                    if (isSelected) Color(0xFFFFEB3B) else Color(0xFFF6FAFF),
                                                     RoundedCornerShape(8.dp)
                                                 )
+                                                .clickable {
+                                                    // Sadece bu satırdaki outcome'lar arasında seçim değişsin
+                                                    selectedBets.filter {
+                                                        it.marketKey == market.key &&
+                                                        it.matchId == odds.id &&
+                                                        it.homeTeam == odds.homeTeam &&
+                                                        it.awayTeam == odds.awayTeam &&
+                                                        it.odd == outcome.price
+                                                    }.forEach { basketManager.removeBet(it) }
+                                                    val bet = SelectedBet(
+                                                        sid = outcomeId,
+                                                        matchId = odds.id,
+                                                        homeTeam = odds.homeTeam,
+                                                        awayTeam = odds.awayTeam,
+                                                        marketKey = market.key,
+                                                        outcomeName = outcome.name,
+                                                        odd = outcome.price,
+                                                        matchTime = odds.commenceTime
+                                                    )
+                                                    if (!isSelected) {
+                                                        basketManager.addBet(bet)
+                                                    }
+                                                }
                                                 .padding(vertical = 8.dp),
                                             horizontalAlignment = Alignment.CenterHorizontally
                                         ) {

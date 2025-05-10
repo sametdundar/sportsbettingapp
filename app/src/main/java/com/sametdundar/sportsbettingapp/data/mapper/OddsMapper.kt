@@ -28,5 +28,6 @@ fun OutcomeResponse.toDomain(): Outcome = Outcome(
     name = name,
     price = price,
     point = point,
-    description = description
+    description = description,
+    sid = sid
 ) 

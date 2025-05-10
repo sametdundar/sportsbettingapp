@@ -79,12 +79,14 @@ class BultenViewModel @Inject constructor(
                         val market = it.bookmakers.firstOrNull()?.markets?.firstOrNull()
                         val outcome = market?.outcomes?.find { o -> o.name == event.outcomeName }
                         if (outcome != null) {
+                            val outcomeId = outcome.sid ?: "${outcome.name}_${market?.key}_${it.id}"
                             basketManager.removeBet(
                                 SelectedBet(
+                                    sid = outcomeId,
                                     matchId = it.id,
                                     homeTeam = it.homeTeam,
                                     awayTeam = it.awayTeam,
-                                    marketKey = market.key,
+                                    marketKey = market?.key ?: "",
                                     outcomeName = outcome.name,
                                     odd = outcome.price,
                                     matchTime = it.commenceTime
@@ -99,8 +101,10 @@ class BultenViewModel @Inject constructor(
                         val market = it.bookmakers.firstOrNull()?.markets?.firstOrNull()
                         val outcome = market?.outcomes?.find { o -> o.name == event.outcomeName }
                         if (market != null && outcome != null) {
+                            val outcomeId = outcome.sid ?: "${outcome.name}_${market.key}_${it.id}"
                             basketManager.addBet(
                                 SelectedBet(
+                                    sid = outcomeId,
                                     matchId = it.id,
                                     homeTeam = it.homeTeam,
                                     awayTeam = it.awayTeam,
