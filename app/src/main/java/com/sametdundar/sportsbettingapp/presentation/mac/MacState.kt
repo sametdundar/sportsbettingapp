@@ -7,5 +7,6 @@ data class MacState(
     val kuponBedeli: String = "50",
     val toplamOran: Double = 0.0,
     val maksKazanc: Double = 0.0,
-    val showDeleteDialog: Boolean = false
+    val showDeleteDialog: Boolean = false,
+    val showSaveCouponDialog: Boolean = false
 ) 

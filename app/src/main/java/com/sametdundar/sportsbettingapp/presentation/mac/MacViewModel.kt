@@ -10,10 +10,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.math.max
+import com.sametdundar.sportsbettingapp.data.local.CouponDao
+import com.sametdundar.sportsbettingapp.domain.model.Coupon
 
 @HiltViewModel
 class MacViewModel @Inject constructor(
-    private val basketManager: BasketManager
+    private val basketManager: BasketManager,
+    private val couponDao: CouponDao
 ) : ViewModel() {
     private val _state = MutableStateFlow(MacState())
     val state: StateFlow<MacState> = _state
@@ -59,6 +62,31 @@ class MacViewModel @Inject constructor(
             is MacEvent.DeleteAllBets -> {
                 basketManager.clearBets()
                 _state.value = _state.value.copy(showDeleteDialog = false)
+            }
+            is MacEvent.SaveCoupon -> {
+                viewModelScope.launch {
+                    val bets = _state.value.selectedBets
+                    if (bets.isNotEmpty()) {
+                        val kuponBedeli = _state.value.kuponBedeli.toDoubleOrNull() ?: 50.0
+                        val oran = _state.value.toplamOran
+                        val maksKazanc = _state.value.maksKazanc
+                        val coupon = Coupon(
+                            kuponBedeli = kuponBedeli,
+                            toplamOran = oran,
+                            maksKazanc = maksKazanc,
+                            bets = bets
+                        )
+                        couponDao.insertCoupon(coupon)
+                        basketManager.clearBets()
+                        _state.value = MacState() // state'i sıfırla
+                    }
+                }
+            }
+            is MacEvent.ShowSaveCouponDialog -> {
+                _state.value = _state.value.copy(showSaveCouponDialog = true)
+            }
+            is MacEvent.HideSaveCouponDialog -> {
+                _state.value = _state.value.copy(showSaveCouponDialog = false)
             }
         }
     }

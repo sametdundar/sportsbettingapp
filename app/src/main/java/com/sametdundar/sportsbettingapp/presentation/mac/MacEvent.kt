@@ -6,5 +6,8 @@ sealed class MacEvent {
     object ShowDeleteDialog : MacEvent()
     object HideDeleteDialog : MacEvent()
     object DeleteAllBets : MacEvent()
+    object SaveCoupon : MacEvent()
+    object ShowSaveCouponDialog : MacEvent()
+    object HideSaveCouponDialog : MacEvent()
     // Gerekirse başka eventler de eklenebilir
 } 

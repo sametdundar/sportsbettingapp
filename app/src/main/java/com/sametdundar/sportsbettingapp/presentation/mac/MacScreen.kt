@@ -129,7 +129,7 @@ fun MacScreen(
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             Button(
-                                onClick = { /* Hemen Oyna aksiyonu */ },
+                                onClick = { viewModel.onEvent(MacEvent.ShowSaveCouponDialog) },
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF388E3C)),
                                 modifier = Modifier.weight(1f).padding(end = 4.dp)
                             ) {
@@ -233,6 +233,25 @@ fun MacScreen(
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.onEvent(MacEvent.HideDeleteDialog) }) {
+                    Text("Hayır")
+                }
+            }
+        )
+    }
+    if (state.showSaveCouponDialog) {
+        AlertDialog(
+            onDismissRequest = { viewModel.onEvent(MacEvent.HideSaveCouponDialog) },
+            title = { Text("Kuponu kaydetmek ve oynamak istiyor musunuz?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.onEvent(MacEvent.SaveCoupon)
+                    viewModel.onEvent(MacEvent.HideSaveCouponDialog)
+                }) {
+                    Text("Evet")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.onEvent(MacEvent.HideSaveCouponDialog) }) {
                     Text("Hayır")
                 }
             }

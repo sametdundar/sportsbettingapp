@@ -11,6 +11,11 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import android.content.SharedPreferences
+import android.content.Context
+import androidx.room.Room
+import com.sametdundar.sportsbettingapp.data.local.AppDatabase
+import com.sametdundar.sportsbettingapp.data.local.CouponDao
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -34,4 +39,17 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideBasketManager(): BasketManager = BasketManager()
+
+    @Provides
+    @Singleton
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "sports_betting_db"
+        ).build()
+
+    @Provides
+    @Singleton
+    fun provideCouponDao(db: AppDatabase): CouponDao = db.couponDao()
 } 
