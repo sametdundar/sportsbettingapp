@@ -9,5 +9,6 @@ sealed class BultenEvent {
     data class ChangeApiKey(val newKey: String) : BultenEvent()
     data class SelectSport(val index: Int) : BultenEvent()
     data class LoadOdds(val sportKey: String) : BultenEvent()
+    data class SearchQueryChanged(val query: String) : BultenEvent()
     // Diğer eventler buraya eklenebilir
 } 

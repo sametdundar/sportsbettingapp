@@ -12,6 +12,7 @@ data class BultenState(
     val showApiKeyDialog: Boolean = false,
     val currentApiKey: String = "",
     val selectedSportIndex: Int = 0,
-    val odds: List<Odds> = emptyList()
+    val odds: List<Odds> = emptyList(),
+    val searchQuery: String = ""
     // Buraya bülten verileri eklenecek
 ) 

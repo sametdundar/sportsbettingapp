@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package com.sametdundar.sportsbettingapp.presentation.bulten
 
 import androidx.compose.foundation.layout.*
@@ -23,6 +25,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 
 @Composable
 fun BultenScreen(
@@ -70,6 +74,7 @@ fun BultenScreen(
     ) {
         Spacer(modifier = Modifier.height(24.dp))
         if (state.groups.isNotEmpty()) {
+            Spacer(modifier = Modifier.height(8.dp))
             Row(
                 modifier = Modifier
                     .horizontalScroll(scrollState)
@@ -140,10 +145,36 @@ fun BultenScreen(
                             )
                         }
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = state.searchQuery,
+                        onValueChange = { viewModel.onEvent(BultenEvent.SearchQueryChanged(it)) },
+                        leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                        placeholder = { Text("Ara...") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
+                            .clip(RoundedCornerShape(24.dp)),
+                        singleLine = true,
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            containerColor = Color.White,
+                            focusedBorderColor = Color(0xFF388E3C),
+                            unfocusedBorderColor = Color(0xFF388E3C)
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
-                if (state.odds.isNotEmpty()) {
+                val filteredOdds = if (state.searchQuery.isBlank()) {
+                    state.odds
+                } else {
+                    state.odds.filter { odds ->
+                        odds.homeTeam.contains(state.searchQuery, ignoreCase = true) ||
+                        odds.awayTeam.contains(state.searchQuery, ignoreCase = true)
+                    }
+                }
+                if (filteredOdds.isNotEmpty()) {
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
-                        items(state.odds) { odds ->
+                        items(filteredOdds) { odds ->
                             Card(
                                 modifier = Modifier
                                     .fillMaxWidth()
