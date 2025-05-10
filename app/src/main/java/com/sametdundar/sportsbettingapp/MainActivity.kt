@@ -23,6 +23,7 @@ import com.sametdundar.sportsbettingapp.presentation.mac.MacScreen
 import com.sametdundar.sportsbettingapp.presentation.favori.FavoriScreen
 import com.sametdundar.sportsbettingapp.presentation.kupon.KuponScreen
 import com.sametdundar.sportsbettingapp.ui.theme.SportsBettingAppTheme
+import dagger.hilt.android.AndroidEntryPoint
 
 sealed class BottomNavItem(val title: String, val icon: ImageVector) {
     object Canli : BottomNavItem("Canlı", Icons.Filled.Home)
@@ -32,6 +33,7 @@ sealed class BottomNavItem(val title: String, val icon: ImageVector) {
     object Kupon : BottomNavItem("Kupon", Icons.Filled.Receipt)
 }
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,10 +49,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainScreen() {
     val items = listOf(
-        BottomNavItem.Canli,
         BottomNavItem.Bulten,
         BottomNavItem.Mac,
-        BottomNavItem.Favori,
         BottomNavItem.Kupon
     )
     var selectedIndex by remember { mutableStateOf(0) }
@@ -71,11 +71,9 @@ fun MainScreen() {
         }
     ) { innerPadding ->
         when (selectedIndex) {
-            0 -> CanliScreen()
-            1 -> BultenScreen()
-            2 -> MacScreen()
-            3 -> FavoriScreen()
-            4 -> KuponScreen()
+            0 -> BultenScreen()
+            1 -> MacScreen()
+            2 -> KuponScreen()
         }
     }
 }

@@ -6,4 +6,6 @@ import com.sametdundar.sportsbettingapp.domain.model.Sport
 interface OddsRepository {
     suspend fun getSports(): List<Sport>
     suspend fun getOdds(sportKey: String, regions: String, markets: String): List<Odds>
+    fun getApiKey(): String
+    fun setApiKey(newKey: String)
 } 
