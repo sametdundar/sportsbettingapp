@@ -38,7 +38,7 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideBasketManager(): BasketManager = BasketManager()
+    fun provideBasketManager(analyticsService: AnalyticsService): BasketManager = BasketManager(analyticsService)
 
     @Provides
     @Singleton
@@ -52,4 +52,8 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideCouponDao(db: AppDatabase): CouponDao = db.couponDao()
+
+    @Provides
+    @Singleton
+    fun provideAnalyticsService(firebaseAnalyticsService: FirebaseAnalyticsService): AnalyticsService = firebaseAnalyticsService
 } 

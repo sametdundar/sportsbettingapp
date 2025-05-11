@@ -107,4 +107,10 @@ dependencies {
     implementation(libs.androidx.material)
 
     implementation("androidx.compose.foundation:foundation:1.5.4")
+
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
+    implementation("com.google.firebase:firebase-analytics-ktx")
+    implementation("com.google.firebase:firebase-auth-ktx")
 }
+
+apply(plugin = "com.google.gms.google-services")

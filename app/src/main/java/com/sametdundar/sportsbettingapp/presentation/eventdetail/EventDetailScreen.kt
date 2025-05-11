@@ -25,17 +25,40 @@ import com.sametdundar.sportsbettingapp.domain.model.SelectedBet
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.clickable
 import com.sametdundar.sportsbettingapp.MainViewModel
+import com.sametdundar.sportsbettingapp.di.AnalyticsService
+import androidx.compose.ui.platform.LocalContext
+import javax.inject.Inject
 
 @Composable
 fun EventDetailScreen(
     sportKey: String,
     eventId: String,
-    viewModel: EventDetailViewModel = hiltViewModel()
+    viewModel: EventDetailViewModel = hiltViewModel(),
+    analyticsService: AnalyticsService = androidx.hilt.navigation.compose.hiltViewModel<MainViewModel>().let { hiltViewModel ->
+        val context = LocalContext.current
+        androidx.hilt.navigation.compose.hiltViewModel<MainViewModel>().let { hiltViewModel }
+        androidx.hilt.navigation.compose.hiltViewModel<MainViewModel>().basketManager.let { basketManager ->
+            val field = basketManager.javaClass.getDeclaredField("analyticsService")
+            field.isAccessible = true
+            field.get(basketManager) as AnalyticsService
+        }
+    }
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
     val basketManager = hiltViewModel<MainViewModel>().basketManager
     val selectedBets by basketManager.selectedBets.collectAsState()
+
+    LaunchedEffect(sportKey, eventId, state.odds) {
+        if (state.odds != null) {
+            val odds = state.odds!!
+            analyticsService.logEvent("match_detail", mapOf(
+                "match_id" to odds.id,
+                "home_team" to odds.homeTeam,
+                "away_team" to odds.awayTeam
+            ))
+        }
+    }
 
     LaunchedEffect(sportKey, eventId) {
         viewModel.onEvent(EventDetailEvent.LoadOdds(sportKey, eventId))

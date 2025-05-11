@@ -3,8 +3,15 @@ package com.sametdundar.sportsbettingapp.di
 import com.sametdundar.sportsbettingapp.domain.model.SelectedBet
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import android.content.Context
+import com.google.firebase.analytics.FirebaseAnalytics
+import android.os.Bundle
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
 
-class BasketManager {
+class BasketManager @Inject constructor(
+    private val analyticsService: AnalyticsService
+) {
     private val _selectedBets = MutableStateFlow<List<SelectedBet>>(emptyList())
     val selectedBets: StateFlow<List<SelectedBet>> = _selectedBets
 
@@ -18,12 +25,26 @@ class BasketManager {
             current.add(bet)
         }
         _selectedBets.value = current
+        // Analytics logla
+        analyticsService.logEvent("add_to_cart", mapOf(
+            "bet_id" to bet.sid,
+            "match_id" to bet.matchId,
+            "market_key" to bet.marketKey,
+            "outcome_name" to bet.outcomeName
+        ))
     }
 
     fun removeBet(bet: SelectedBet) {
         val current = _selectedBets.value.toMutableList()
         current.removeAll { it.matchId == bet.matchId && it.marketKey == bet.marketKey }
         _selectedBets.value = current
+        // Analytics logla
+        analyticsService.logEvent("remove_from_cart", mapOf(
+            "bet_id" to bet.sid,
+            "match_id" to bet.matchId,
+            "market_key" to bet.marketKey,
+            "outcome_name" to bet.outcomeName
+        ))
     }
 
     fun clearBets() {
