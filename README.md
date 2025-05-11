@@ -8,7 +8,8 @@ Bu proje, Clean Architecture prensipleriyle geliştirilmiş modern bir spor bahi
 
 ![image](https://github.com/user-attachments/assets/9f21494c-e206-43db-8e40-4169d1bea752)
 
-![image](https://github.com/user-attachments/assets/debe8a76-f7c9-45ab-b6d5-52fc817ccb14)
+![image](https://github.com/user-attachments/assets/a82a0928-2d63-4e57-aa88-e42e43c5a851)
+
 
 ## Özellikler
 - 3 tab'lı modern bottom navigation bar
