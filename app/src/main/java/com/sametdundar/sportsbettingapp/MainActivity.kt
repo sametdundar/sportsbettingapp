@@ -151,7 +151,7 @@ fun MainNavigation() {
                         contentDescription = "Oyun",
                         tint = Color(0xFF388E3C)
                     )
-                    Text("${selectedMatchCount} Maç", color = Color(0xFF388E3C))
+                    Text("${selectedMatchCount} Oran", color = Color(0xFF388E3C))
                 }
             }
         },

@@ -2,7 +2,12 @@ package com.sametdundar.sportsbettingapp.presentation.mac
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sametdundar.sportsbettingapp.di.BasketManager
+import com.sametdundar.sportsbettingapp.domain.model.Coupon
+import com.sametdundar.sportsbettingapp.domain.usecase.SaveCouponUseCase
+import com.sametdundar.sportsbettingapp.domain.usecase.basket.AddBetToBasketUseCase
+import com.sametdundar.sportsbettingapp.domain.usecase.basket.RemoveBetFromBasketUseCase
+import com.sametdundar.sportsbettingapp.domain.usecase.basket.ClearBasketUseCase
+import com.sametdundar.sportsbettingapp.domain.repository.BasketRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -10,13 +15,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.math.max
-import com.sametdundar.sportsbettingapp.domain.model.Coupon
-import com.sametdundar.sportsbettingapp.domain.usecase.SaveCouponUseCase
 
 @HiltViewModel
 class MacViewModel @Inject constructor(
-    private val basketManager: BasketManager,
-    private val saveCouponUseCase: SaveCouponUseCase
+    private val addBetToBasketUseCase: AddBetToBasketUseCase,
+    private val removeBetFromBasketUseCase: RemoveBetFromBasketUseCase,
+    private val clearBasketUseCase: ClearBasketUseCase,
+    private val saveCouponUseCase: SaveCouponUseCase,
+    private val basketRepository: BasketRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(MacState())
     val state: StateFlow<MacState> = _state
@@ -29,7 +35,7 @@ class MacViewModel @Inject constructor(
         when (event) {
             is MacEvent.LoadSelectedBets -> {
                 viewModelScope.launch {
-                    basketManager.selectedBets.collectLatest { bets ->
+                    basketRepository.selectedBets.collectLatest { bets ->
                         val oran = bets.mapNotNull { it.odd }.fold(1.0) { acc, d -> acc * d }
                         val kuponBedeli = _state.value.kuponBedeli.toDoubleOrNull() ?: 50.0
                         val maksKazanc = if (bets.isNotEmpty()) oran * kuponBedeli else 0.0
@@ -60,7 +66,7 @@ class MacViewModel @Inject constructor(
                 _state.value = _state.value.copy(showDeleteDialog = false)
             }
             is MacEvent.DeleteAllBets -> {
-                basketManager.clearBets()
+                clearBasketUseCase()
                 _state.value = _state.value.copy(showDeleteDialog = false)
             }
             is MacEvent.SaveCoupon -> {
@@ -77,7 +83,7 @@ class MacViewModel @Inject constructor(
                             bets = bets
                         )
                         saveCouponUseCase(coupon)
-                        basketManager.clearBets()
+                        clearBasketUseCase()
                         _state.value = MacState()
                         onAllBetsCleared?.invoke()
                     }

@@ -4,7 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sametdundar.sportsbettingapp.domain.usecase.GetSportsUseCase
 import com.sametdundar.sportsbettingapp.domain.usecase.GetOddsUseCase
-import com.sametdundar.sportsbettingapp.di.BasketManager
+import com.sametdundar.sportsbettingapp.domain.usecase.basket.AddBetToBasketUseCase
+import com.sametdundar.sportsbettingapp.domain.usecase.basket.RemoveBetFromBasketUseCase
+import com.sametdundar.sportsbettingapp.domain.usecase.basket.ClearBasketUseCase
+import com.sametdundar.sportsbettingapp.domain.repository.BasketRepository
 import com.sametdundar.sportsbettingapp.domain.model.SelectedBet
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +19,10 @@ import javax.inject.Inject
 class BultenViewModel @Inject constructor(
     private val getSportsUseCase: GetSportsUseCase,
     private val getOddsUseCase: GetOddsUseCase,
-    private val basketManager: BasketManager
+    private val addBetToBasketUseCase: AddBetToBasketUseCase,
+    private val removeBetFromBasketUseCase: RemoveBetFromBasketUseCase,
+    private val clearBasketUseCase: ClearBasketUseCase,
+    private val basketRepository: BasketRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(BultenState())
     val state: StateFlow<BultenState> = _state
@@ -80,7 +86,7 @@ class BultenViewModel @Inject constructor(
                         val outcome = market?.outcomes?.find { o -> o.name == event.outcomeName }
                         if (outcome != null) {
                             val outcomeId = outcome.sid ?: "${outcome.name}_${market?.key}_${it.id}"
-                            basketManager.removeBet(
+                            removeBetFromBasketUseCase(
                                 SelectedBet(
                                     sid = outcomeId,
                                     matchId = it.id,
@@ -102,7 +108,7 @@ class BultenViewModel @Inject constructor(
                         val outcome = market?.outcomes?.find { o -> o.name == event.outcomeName }
                         if (market != null && outcome != null) {
                             val outcomeId = outcome.sid ?: "${outcome.name}_${market.key}_${it.id}"
-                            basketManager.addBet(
+                            addBetToBasketUseCase(
                                 SelectedBet(
                                     sid = outcomeId,
                                     matchId = it.id,

@@ -27,26 +27,29 @@ import com.sametdundar.sportsbettingapp.MainViewModel
 import com.sametdundar.sportsbettingapp.di.AnalyticsService
 import androidx.compose.ui.platform.LocalContext
 import javax.inject.Inject
+import com.sametdundar.sportsbettingapp.domain.usecase.basket.AddBetToBasketUseCase
+import com.sametdundar.sportsbettingapp.domain.usecase.basket.RemoveBetFromBasketUseCase
+import com.sametdundar.sportsbettingapp.domain.repository.BasketRepository
 
 @Composable
 fun EventDetailScreen(
     sportKey: String,
     eventId: String,
     viewModel: EventDetailViewModel = hiltViewModel(),
+    mainViewModel: MainViewModel = hiltViewModel(),
     analyticsService: AnalyticsService = androidx.hilt.navigation.compose.hiltViewModel<MainViewModel>().let { hiltViewModel ->
         val context = LocalContext.current
         androidx.hilt.navigation.compose.hiltViewModel<MainViewModel>().let { hiltViewModel }
-        androidx.hilt.navigation.compose.hiltViewModel<MainViewModel>().basketManager.let { basketManager ->
-            val field = basketManager.javaClass.getDeclaredField("analyticsService")
+        androidx.hilt.navigation.compose.hiltViewModel<MainViewModel>().basketRepository.let { basketrepo ->
+            val field = basketrepo.javaClass.getDeclaredField("analyticsService")
             field.isAccessible = true
-            field.get(basketManager) as AnalyticsService
+            field.get(basketrepo) as AnalyticsService
         }
     }
 ) {
     val state by viewModel.state.collectAsState()
     val scrollState = rememberScrollState()
-    val basketManager = hiltViewModel<MainViewModel>().basketManager
-    val selectedBets by basketManager.selectedBets.collectAsState()
+    val selectedBets by mainViewModel.selectedBets.collectAsState()
 
     LaunchedEffect(sportKey, eventId, state.odds) {
         if (state.odds != null) {
@@ -174,7 +177,7 @@ fun EventDetailScreen(
                                                         it.homeTeam == odds.homeTeam &&
                                                         it.awayTeam == odds.awayTeam &&
                                                         it.odd == outcome.price
-                                                    }.forEach { basketManager.removeBet(it) }
+                                                    }.forEach { viewModel.removeBet(it) }
                                                     val bet = SelectedBet(
                                                         sid = outcomeId,
                                                         matchId = odds.id,
@@ -186,7 +189,7 @@ fun EventDetailScreen(
                                                         matchTime = odds.commenceTime
                                                     )
                                                     if (!isSelected) {
-                                                        basketManager.addBet(bet)
+                                                        viewModel.addBet(bet)
                                                     }
                                                 }
                                                 .padding(vertical = 8.dp),

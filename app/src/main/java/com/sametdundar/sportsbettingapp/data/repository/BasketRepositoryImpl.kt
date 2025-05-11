@@ -1,21 +1,19 @@
-package com.sametdundar.sportsbettingapp.di
+package com.sametdundar.sportsbettingapp.data.repository
 
+import com.sametdundar.sportsbettingapp.di.AnalyticsService
 import com.sametdundar.sportsbettingapp.domain.model.SelectedBet
+import com.sametdundar.sportsbettingapp.domain.repository.BasketRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import android.content.Context
-import com.google.firebase.analytics.FirebaseAnalytics
-import android.os.Bundle
-import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
-class BasketManager @Inject constructor(
+class BasketRepositoryImpl @Inject constructor(
     private val analyticsService: AnalyticsService
-) {
+) : BasketRepository {
     private val _selectedBets = MutableStateFlow<List<SelectedBet>>(emptyList())
-    val selectedBets: StateFlow<List<SelectedBet>> = _selectedBets
+    override val selectedBets: StateFlow<List<SelectedBet>> = _selectedBets
 
-    fun addBet(bet: SelectedBet) {
+    override fun addBet(bet: SelectedBet) {
         val current = _selectedBets.value.toMutableList()
         val existingIndex = current.indexOfFirst { it.matchId == bet.matchId && it.marketKey == bet.marketKey }
         if (existingIndex != -1) {
@@ -32,7 +30,7 @@ class BasketManager @Inject constructor(
         ))
     }
 
-    fun removeBet(bet: SelectedBet) {
+    override fun removeBet(bet: SelectedBet) {
         val current = _selectedBets.value.toMutableList()
         current.removeAll { it.matchId == bet.matchId && it.marketKey == bet.marketKey }
         _selectedBets.value = current
@@ -44,7 +42,7 @@ class BasketManager @Inject constructor(
         ))
     }
 
-    fun clearBets() {
+    override fun clearBets() {
         _selectedBets.value = emptyList()
     }
 } 

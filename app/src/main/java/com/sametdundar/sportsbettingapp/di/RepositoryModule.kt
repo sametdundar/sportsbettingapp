@@ -18,6 +18,11 @@ import androidx.room.Room
 import com.sametdundar.sportsbettingapp.data.local.AppDatabase
 import com.sametdundar.sportsbettingapp.data.local.CouponDao
 import dagger.hilt.android.qualifiers.ApplicationContext
+import com.sametdundar.sportsbettingapp.domain.repository.BasketRepository
+import com.sametdundar.sportsbettingapp.data.repository.BasketRepositoryImpl
+import com.sametdundar.sportsbettingapp.domain.usecase.basket.AddBetToBasketUseCase
+import com.sametdundar.sportsbettingapp.domain.usecase.basket.RemoveBetFromBasketUseCase
+import com.sametdundar.sportsbettingapp.domain.usecase.basket.ClearBasketUseCase
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -40,7 +45,7 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideBasketManager(analyticsService: AnalyticsService): BasketManager = BasketManager(analyticsService)
+    fun provideBasketRepository(analyticsService: AnalyticsService): BasketRepository = BasketRepositoryImpl(analyticsService)
 
     @Provides
     @Singleton
@@ -66,4 +71,19 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideGetAllCouponsUseCase(couponDao: CouponDao): GetAllCouponsUseCase = GetAllCouponsUseCase(couponDao)
+
+    @Provides
+    @Singleton
+    fun provideAddBetToBasketUseCase(basketRepository: BasketRepository): AddBetToBasketUseCase =
+        AddBetToBasketUseCase(basketRepository)
+
+    @Provides
+    @Singleton
+    fun provideRemoveBetFromBasketUseCase(basketRepository: BasketRepository): RemoveBetFromBasketUseCase =
+        RemoveBetFromBasketUseCase(basketRepository)
+
+    @Provides
+    @Singleton
+    fun provideClearBasketUseCase(basketRepository: BasketRepository): ClearBasketUseCase =
+        ClearBasketUseCase(basketRepository)
 } 
