@@ -2,8 +2,7 @@ package com.sametdundar.sportsbettingapp.presentation.kupon
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sametdundar.sportsbettingapp.data.local.CouponDao
-import com.sametdundar.sportsbettingapp.domain.model.Coupon
+import com.sametdundar.sportsbettingapp.domain.usecase.GetAllCouponsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +12,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class KuponViewModel @Inject constructor(
-    private val couponDao: CouponDao
+    private val getAllCouponsUseCase: GetAllCouponsUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(KuponState())
     val state: StateFlow<KuponState> = _state
@@ -26,7 +25,7 @@ class KuponViewModel @Inject constructor(
         when (event) {
             is KuponEvent.LoadCoupons -> {
                 viewModelScope.launch {
-                    couponDao.getAllCoupons().collectLatest { coupons ->
+                    getAllCouponsUseCase().collectLatest { coupons ->
                         _state.value = _state.value.copy(coupons = coupons)
                     }
                 }

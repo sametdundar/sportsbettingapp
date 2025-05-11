@@ -9,5 +9,4 @@ sealed class MacEvent {
     object SaveCoupon : MacEvent()
     object ShowSaveCouponDialog : MacEvent()
     object HideSaveCouponDialog : MacEvent()
-    // Gerekirse başka eventler de eklenebilir
-} 
+}

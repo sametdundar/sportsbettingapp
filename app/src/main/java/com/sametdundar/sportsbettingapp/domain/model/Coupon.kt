@@ -2,8 +2,6 @@ package com.sametdundar.sportsbettingapp.domain.model
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import androidx.room.TypeConverters
-import java.util.Date
 
 @Entity(tableName = "coupons")
 data class Coupon(

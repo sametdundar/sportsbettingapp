@@ -10,13 +10,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlin.math.max
-import com.sametdundar.sportsbettingapp.data.local.CouponDao
 import com.sametdundar.sportsbettingapp.domain.model.Coupon
+import com.sametdundar.sportsbettingapp.domain.usecase.SaveCouponUseCase
 
 @HiltViewModel
 class MacViewModel @Inject constructor(
     private val basketManager: BasketManager,
-    private val couponDao: CouponDao
+    private val saveCouponUseCase: SaveCouponUseCase
 ) : ViewModel() {
     private val _state = MutableStateFlow(MacState())
     val state: StateFlow<MacState> = _state
@@ -76,10 +76,10 @@ class MacViewModel @Inject constructor(
                             maksKazanc = maksKazanc,
                             bets = bets
                         )
-                        couponDao.insertCoupon(coupon)
+                        saveCouponUseCase(coupon)
                         basketManager.clearBets()
-                        _state.value = MacState() // state'i sıfırla
-                        onAllBetsCleared?.invoke() // Bülten'deki seçili oranları temizle
+                        _state.value = MacState()
+                        onAllBetsCleared?.invoke()
                     }
                 }
             }

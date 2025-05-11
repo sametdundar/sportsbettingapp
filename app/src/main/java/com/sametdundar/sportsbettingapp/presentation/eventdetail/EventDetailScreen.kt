@@ -10,7 +10,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.background
@@ -84,7 +83,6 @@ fun EventDetailScreen(
             }
             state.odds != null -> {
                 val odds = state.odds!!
-                // Başlık ve saat
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -170,7 +168,6 @@ fun EventDetailScreen(
                                                     RoundedCornerShape(8.dp)
                                                 )
                                                 .clickable {
-                                                    // Sadece bu satırdaki outcome'lar arasında seçim değişsin
                                                     selectedBets.filter {
                                                         it.marketKey == market.key &&
                                                         it.matchId == odds.id &&

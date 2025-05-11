@@ -86,12 +86,11 @@ fun MainNavigation() {
     val currentRoute = navBackStackEntry.value?.destination?.route
     val selectedIndex = items.indexOfFirst { it.route == currentRoute }.takeIf { it >= 0 } ?: 0
 
-    // BasketManager'ı Hilt ile inject etme, onun yerine MainViewModel'i kullan
-    val mainViewModel: MainViewModel = androidx.hilt.navigation.compose.hiltViewModel()
+    val mainViewModel: MainViewModel = hiltViewModel()
     val selectedBets by mainViewModel.selectedBets.collectAsState()
     val selectedMatchCount = selectedBets.size
 
-    val bultenViewModel: BultenViewModel = androidx.hilt.navigation.compose.hiltViewModel()
+    val bultenViewModel: BultenViewModel = hiltViewModel()
 
     Scaffold(
         bottomBar = {

@@ -17,7 +17,6 @@ class BasketManager @Inject constructor(
 
     fun addBet(bet: SelectedBet) {
         val current = _selectedBets.value.toMutableList()
-        // Aynı maç ve marketten bir seçim varsa güncelle
         val existingIndex = current.indexOfFirst { it.matchId == bet.matchId && it.marketKey == bet.marketKey }
         if (existingIndex != -1) {
             current[existingIndex] = bet
@@ -25,7 +24,6 @@ class BasketManager @Inject constructor(
             current.add(bet)
         }
         _selectedBets.value = current
-        // Analytics logla
         analyticsService.logEvent("add_to_cart", mapOf(
             "bet_id" to bet.sid,
             "match_id" to bet.matchId,
@@ -38,7 +36,6 @@ class BasketManager @Inject constructor(
         val current = _selectedBets.value.toMutableList()
         current.removeAll { it.matchId == bet.matchId && it.marketKey == bet.marketKey }
         _selectedBets.value = current
-        // Analytics logla
         analyticsService.logEvent("remove_from_cart", mapOf(
             "bet_id" to bet.sid,
             "match_id" to bet.matchId,

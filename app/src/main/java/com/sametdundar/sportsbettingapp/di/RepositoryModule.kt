@@ -5,6 +5,8 @@ import com.sametdundar.sportsbettingapp.data.repository.OddsRepositoryImpl
 import com.sametdundar.sportsbettingapp.domain.repository.OddsRepository
 import com.sametdundar.sportsbettingapp.domain.usecase.GetOddsUseCase
 import com.sametdundar.sportsbettingapp.domain.usecase.GetSportsUseCase
+import com.sametdundar.sportsbettingapp.domain.usecase.SaveCouponUseCase
+import com.sametdundar.sportsbettingapp.domain.usecase.GetAllCouponsUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -56,4 +58,12 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideAnalyticsService(firebaseAnalyticsService: FirebaseAnalyticsService): AnalyticsService = firebaseAnalyticsService
+
+    @Provides
+    @Singleton
+    fun provideSaveCouponUseCase(couponDao: CouponDao): SaveCouponUseCase = SaveCouponUseCase(couponDao)
+
+    @Provides
+    @Singleton
+    fun provideGetAllCouponsUseCase(couponDao: CouponDao): GetAllCouponsUseCase = GetAllCouponsUseCase(couponDao)
 } 
