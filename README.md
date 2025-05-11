@@ -2,6 +2,14 @@
 
 Bu proje, Clean Architecture prensipleriyle geliştirilmiş modern bir spor bahis uygulamasıdır. Uygulama, Jetpack Compose ile yazılmıştır ve Hilt, Room, Retrofit gibi modern Android teknolojilerini kullanır.
 
+![image](https://github.com/user-attachments/assets/3221764c-bd5c-4aad-b498-affbc4526803)
+
+![image](https://github.com/user-attachments/assets/166c2e07-760e-4541-bc9b-a5fa42261b38)
+
+![image](https://github.com/user-attachments/assets/9f21494c-e206-43db-8e40-4169d1bea752)
+
+![image](https://github.com/user-attachments/assets/debe8a76-f7c9-45ab-b6d5-52fc817ccb14)
+
 ## Özellikler
 - 3 tab'lı modern bottom navigation bar
 - Bülten ekranında sporlar, gruplar, arama ve oranlar
