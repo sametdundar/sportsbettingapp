@@ -25,7 +25,7 @@ class OddsRepositoryImpl(
 ) : OddsRepository {
     companion object {
         private const val KEY_API_KEY = "api_key"
-        private const val DEFAULT_API_KEY = "YOUR_API_KEY"
+        private const val DEFAULT_API_KEY = "a67244d28db178401347f79401247184"
     }
 
     override fun getApiKey(): String {
